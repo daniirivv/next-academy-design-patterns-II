@@ -49,6 +49,26 @@ creación a la factoría desde el propio Servicio, añadiendo a la factoría com
 factoría por múltiples niveles hasta llegar a su punto de consumo (lo cual tampoco es que esté mal de por sí, pero esta 
 opción me ha parecido algo más interesante).
 
+### Posibles puntos de mejora
+
+- Para esta implementación, he convertido a Attack en clase abstracta, y he creado una jerarquía de herencias con cada 
+tipo de ataque. No estoy muy seguro de esta jerarquía; al fin y al cabo, no dejan de ser instancias con valores 
+predefinidos para los atributos que define Attack. Soluciones para esto podrían ser usar Record (que debido a que es 
+clase final no entró en mi estrategia) y delegar en la Factoría también para la selección de atributos con los que 
+inicializar cada instancia de ataque según el movimiento que vaya a ser.
+
+PD: al final implementé estos cambios también
+
+- PDPD: Por lo visto dentro de los enumerados puedo poner constructores y parámetros también. Esto me permitiría 
+introducir las características propias de cada movimiento de ataque (nombre, daño base y tipo) directamente dentro del 
+enumerado, haciendo que sea la única fuente de verdad con respecto a este tema. Podría, incluso, hacer que el enumerado 
+transformase a récord con un simple `new Attack()` usando los parámetros definidos en cada valor del enum, y eso me 
+ahorraría la Factoría entera (que en este punto, más que crear, transforma los valores del enumerado con sus parámetros 
+en un objeto Record encapsulado, como si fuera un Value Object). Parece demasiado bueno para ser verdad, aunque tampoco 
+sé si el enumerado como "generador" de ataques me convence demasiado. Desde luego, para la semántica de tener los
+valores de cada movimiento de ataque asociados al valor del enumerado, parece lo mejor.
+
+
 ### Profundización: otras opciones
 
 El bueno de *Gemini* propone una solución adicional:
