@@ -68,6 +68,9 @@ con sus parámetros en un objeto Record encapsulado, como si fuera un Value Obje
 si el enumerado como "generador" de ataques me convence demasiado. Desde luego, para la semántica de tener los valores 
 de cada movimiento de ataque asociados al valor del enumerado, parece lo mejor.
 
+- En Java moderno existen las *sealed interfaces* que quizás puedan ayudar a mejorar algún punto de esta implementación.
+Quizás merezca la pena investigarlas, pero estoy bastante satisfecho con esta implementación por ahora.
+
 
 ### Profundización: otras opciones
 
