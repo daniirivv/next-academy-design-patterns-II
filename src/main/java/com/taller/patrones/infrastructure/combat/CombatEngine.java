@@ -26,13 +26,13 @@ public class CombatEngine {
      * Cada fórmula nueva (ej. crítico, veneno con tiempo) requiere modificar este switch.
      */
     public int calculateDamage(Character attacker, Character defender, Attack attack) {
-        return switch (attack.getType()) {
+        return switch (attack.type()) {
             case NORMAL -> {
-                int raw = attacker.getAttack() * attack.getBasePower() / 100;
+                int raw = attacker.getAttack() * attack.basePower() / 100;
                 yield Math.max(1, raw - defender.getDefense());
             }
             case SPECIAL -> {
-                int raw = attacker.getAttack() * attack.getBasePower() / 100;
+                int raw = attacker.getAttack() * attack.basePower() / 100;
                 int effectiveDef = defender.getDefense() / 2;
                 yield Math.max(1, raw - effectiveDef);
             }

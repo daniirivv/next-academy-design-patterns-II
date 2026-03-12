@@ -11,12 +11,12 @@ public class AttackFactory {
 
     private final Map<AttackMovement, Attack> attackMap = new EnumMap<>(
             Map.of(
-                    TACKLE, new TackleAttack(),
-                    SLASH, new SlashAttack(),
-                    FIREBALL, new FireballAttack(),
-                    ICE_BEAM, new IceBeamAttack(),
-                    POISON_STING, new PoisonStingAttack(),
-                    THUNDER, new ThunderAttack()
+                    TACKLE, new Attack("Tackle", 40, AttackType.NORMAL),
+                    SLASH, new Attack("Slash", 55, AttackType.NORMAL),
+                    FIREBALL, new Attack("Fireball", 80, AttackType.SPECIAL),
+                    ICE_BEAM, new Attack("Ice Beam", 70, AttackType.SPECIAL),
+                    POISON_STING, new Attack("Poison Sting", 20, AttackType.STATUS),
+                    THUNDER, new Attack("Hit", 30, AttackType.NORMAL)
             )
     );
 
