@@ -3,6 +3,7 @@ package com.taller.patrones.interfaces.rest;
 import com.taller.patrones.application.BattleService;
 import com.taller.patrones.domain.Battle;
 import com.taller.patrones.domain.Character;
+import com.taller.patrones.domain.attacks.AttackMovement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,12 +85,14 @@ public class BattleController {
         Battle battle = battleService.getBattle(battleId);
         if (battle == null) return ResponseEntity.notFound().build();
 
-        String attackName = body != null && body.get("attack") != null ? body.get("attack") : "TACKLE";
+        AttackMovement attackMovement;
+        if (body == null || body.get("attack") == null) attackMovement = AttackMovement.TACKLE;
+        else attackMovement = AttackMovement.valueOf( body.get("attack"));
 
         if (battle.isPlayerTurn()) {
-            battleService.executePlayerAttack(battleId, attackName);
+            battleService.executePlayerAttack(battleId, attackMovement);
         } else {
-            battleService.executeEnemyAttack(battleId, attackName);
+            battleService.executeEnemyAttack(battleId, attackMovement);
         }
 
         return ResponseEntity.ok(toBattleDto(battleService.getBattle(battleId)));
@@ -102,7 +105,7 @@ public class BattleController {
         if (battle.isPlayerTurn() || battle.isFinished()) {
             return ResponseEntity.ok(toBattleDto(battle));
         }
-        String attack = BattleService.ENEMY_ATTACKS.get((int) (Math.random() * BattleService.ENEMY_ATTACKS.size()));
+        AttackMovement attack = BattleService.ENEMY_ATTACKS.get((int) (Math.random() * BattleService.ENEMY_ATTACKS.size()));
         battleService.executeEnemyAttack(battleId, attack);
         return ResponseEntity.ok(toBattleDto(battleService.getBattle(battleId)));
     }

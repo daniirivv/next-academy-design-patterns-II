@@ -1,13 +1,16 @@
 package com.taller.patrones.application;
 
-import com.taller.patrones.domain.Attack;
+import com.taller.patrones.domain.attacks.Attack;
 import com.taller.patrones.domain.Battle;
 import com.taller.patrones.domain.Character;
+import com.taller.patrones.domain.attacks.AttackMovement;
 import com.taller.patrones.infrastructure.combat.CombatEngine;
 import com.taller.patrones.infrastructure.persistence.BattleRepository;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.taller.patrones.domain.attacks.AttackMovement.*;
 
 /**
  * Caso de uso: gestionar batallas.
@@ -20,8 +23,8 @@ public class BattleService {
     private final CombatEngine combatEngine = new CombatEngine();
     private final BattleRepository battleRepository = new BattleRepository();
 
-    public static final List<String> PLAYER_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL", "ICE_BEAM", "POISON_STING", "THUNDER");
-    public static final List<String> ENEMY_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL");
+    public static final List<AttackMovement> PLAYER_ATTACKS = List.of(AttackMovement.values());
+    public static final List<AttackMovement> ENEMY_ATTACKS = List.of(TACKLE, SLASH, FIREBALL);
 
     public BattleStartResult startBattle(String playerName, String enemyName) {
         Character player = new Character(
@@ -45,20 +48,20 @@ public class BattleService {
         return battleRepository.findById(battleId);
     }
 
-    public void executePlayerAttack(String battleId, String attackName) {
+    public void executePlayerAttack(String battleId, AttackMovement attackMovement) {
         Battle battle = battleRepository.findById(battleId);
         if (battle == null || battle.isFinished() || !battle.isPlayerTurn()) return;
 
-        Attack attack = combatEngine.createAttack(attackName);
+        Attack attack = combatEngine.createAttack(attackMovement);
         int damage = combatEngine.calculateDamage(battle.getPlayer(), battle.getEnemy(), attack);
         applyDamage(battle, battle.getPlayer(), battle.getEnemy(), damage, attack);
     }
 
-    public void executeEnemyAttack(String battleId, String attackName) {
+    public void executeEnemyAttack(String battleId, AttackMovement attackMovement) {
         Battle battle = battleRepository.findById(battleId);
         if (battle == null || battle.isFinished() || battle.isPlayerTurn()) return;
 
-        Attack attack = combatEngine.createAttack(attackName != null ? attackName : "TACKLE");
+        Attack attack = combatEngine.createAttack(attackMovement);
         int damage = combatEngine.calculateDamage(battle.getEnemy(), battle.getPlayer(), attack);
         applyDamage(battle, battle.getEnemy(), battle.getPlayer(), damage, attack);
     }
