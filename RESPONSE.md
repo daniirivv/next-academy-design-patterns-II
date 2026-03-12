@@ -59,14 +59,14 @@ inicializar cada instancia de ataque según el movimiento que vaya a ser.
 
 PD: al final implementé estos cambios también
 
-- PDPD: Por lo visto dentro de los enumerados puedo poner constructores y parámetros también. Esto me permitiría 
-introducir las características propias de cada movimiento de ataque (nombre, daño base y tipo) directamente dentro del 
-enumerado, haciendo que sea la única fuente de verdad con respecto a este tema. Podría, incluso, hacer que el enumerado 
-transformase a récord con un simple `new Attack()` usando los parámetros definidos en cada valor del enum, y eso me 
-ahorraría la Factoría entera (que en este punto, más que crear, transforma los valores del enumerado con sus parámetros 
-en un objeto Record encapsulado, como si fuera un Value Object). Parece demasiado bueno para ser verdad, aunque tampoco 
-sé si el enumerado como "generador" de ataques me convence demasiado. Desde luego, para la semántica de tener los
-valores de cada movimiento de ataque asociados al valor del enumerado, parece lo mejor.
+- PDPD: Por lo visto dentro de los enumerados puedo poner constructores y parámetros también (Power Use de manual). 
+Esto me permitiría introducir las características propias de cada movimiento de ataque (nombre, daño base y tipo) 
+directamente dentro del enumerado, haciendo que sea la única fuente de verdad con respecto a este tema. Podría, incluso, 
+hacer que el enumerado transformase a récord con un simple `new Attack()` usando los parámetros definidos en cada valor 
+del enum, y eso me ahorraría la Factoría entera (que en este punto, más que crear, transforma los valores del enumerado 
+con sus parámetros en un objeto Record encapsulado, como si fuera un Value Object). Parece potente, aunque tampoco sé 
+si el enumerado como "generador" de ataques me convence demasiado. Desde luego, para la semántica de tener los valores 
+de cada movimiento de ataque asociados al valor del enumerado, parece lo mejor.
 
 
 ### Profundización: otras opciones
