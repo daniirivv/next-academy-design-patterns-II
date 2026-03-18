@@ -21,7 +21,7 @@ import static com.taller.patrones.domain.attacks.AttackMovement.*;
 public class BattleService {
 
     private final CombatEngine combatEngine = new CombatEngine();
-    private final BattleRepository battleRepository = new BattleRepository();
+    private final BattleRepository battleRepository = BattleRepository.instance;
 
     public static final List<AttackMovement> PLAYER_ATTACKS = List.of(AttackMovement.values());
     public static final List<AttackMovement> ENEMY_ATTACKS = List.of(TACKLE, SLASH, FIREBALL);
