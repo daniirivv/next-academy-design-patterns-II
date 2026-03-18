@@ -39,13 +39,11 @@ enumerado) por los siguientes motivos:
 
 En lugar de implementar una factoría por tipo de ataque y discriminar la factoría en el servicio, lo que hice fue
 dejar que el servicio traduzca el String al valor enumerado de Movimiento de ataque (que también creé para esta
-solución)
-y lo pase a CombatEngine, quien dispone de la Factoría como atributo para delegar en ella en el momento de la creación
-del ataque.
+solución) y lo pase a CombatEngine, quien dispone de la Factoría como atributo para delegar en ella en el momento de la 
+creación del ataque.
 
 - La factoría se encarga de mapear el discriminador enumerado al tipo de ataque correspondiente. Utiliza una
-  implementación
-  concreta de Map (EnumMap) que es más eficiente para tipos enumerados usados como clave.
+  implementación concreta de Map (EnumMap) que es más eficiente para tipos enumerados usados como clave.
 
 - Decidí que era asumible que la Factoría fuese un atributo de CombatEngine porque la estructura previa del código tiene
   un método en la misma que consiste en crear el ataque, aunque realmente se podría haber optado también por delegar la
@@ -53,8 +51,7 @@ del ataque.
 
 - Esta implementación sustituye el mapa del discriminador-factoría en el servicio y no pasa como argumento un objeto
   factoría por múltiples niveles hasta llegar a su punto de consumo (lo cual tampoco es que esté mal de por sí, pero
-  esta
-  opción me ha parecido algo más interesante).
+  esta opción me ha parecido algo más interesante).
 
 ### Posibles puntos de mejora
 
@@ -79,7 +76,7 @@ PD: al final implementé estos cambios también
   de cada movimiento de ataque asociados al valor del enumerado, parece lo mejor.
 
 - En Java moderno existen las *sealed interfaces* que quizás puedan ayudar a mejorar algún punto de esta implementación.
-  Quizás merezca la pena investigarlas, pero estoy bastante satisfecho con esta implementación por ahora.
+  Igual merece la pena investigarlas, pero estoy bastante satisfecho con esta implementación por ahora.
 
 ### Profundización: otras opciones
 
@@ -113,55 +110,45 @@ anterior:
 
 - Implementación tradicional de Strategy: una interfaz para la estrategia con implementaciones para cada tipo de daño.
   Esto permite añadir clases para cada implementación, y el método solamente delega en la implementación que recibe por
-  parámetro
-  para aplicar la estrategia.
+  parámetro para aplicar la estrategia.
 
 - Usar los "poderes" de la clase Enum de Java: por lo descubierto anteriormente, es posible asociar un comportamiento
-  distinto
-  a cada valor de un Enum en Java, de forma que la implementación de un Strategy se basa simplemente en
+  distinto a cada valor de un Enum en Java, de forma que la implementación de un Strategy se basa simplemente en
   ENUM_INSTANCE.doSth()
   y esto implementa directamente la estrategia específica (previamente definida) para ese valor del enum. Es una
-  implementación
-  algo más "implícita" para el patrón Strategy, extremadamente ligada al tipo del valor enumerado, aunque en nuestro
-  caso eso
-  no es precisamente una desventaja, puesto que la lógica así lo expresa.
+  implementación algo más "implícita" para el patrón Strategy, extremadamente ligada al tipo del valor enumerado, 
+  aunque en nuestro caso eso no es precisamente una desventaja, puesto que la lógica así lo expresa.
 
 ### Implementación de la solución
 
 He optado por utilizar la implementación del enumerado, puesto que viendo la solución de este taller, no he encontrado
-otra forma de hacer un strategy tradicional sin violar el OCP. Aquí una explicación de la implementación:
+otra forma de hacer un strategy tradicional sin violar el OCP. Además, me parecía más rica en cuanto a aprendizaje y 
+más interesante en cuanto a verdadero beneficio. 
+
+Aquí una explicación de la implementación:
 
 - He definido la interfaz funcional DamageStrategy (con la anotación @FunctionalInterface) que define los parámetros y
-  el tipo de retorno.
-  Esto actúa como "contrato de estrategia"; todos los métodos que tengan estos parámetros y este tipo de retorno cumplen
-  la interfaz
-  (duck typing; si hace quack como un pato y anda como un pato, es un pato).
+  el tipo de retorno. Esto actúa como "contrato de estrategia"; todos los métodos que tengan estos parámetros y este 
+  tipo de retorno cumplen la interfaz (duck typing; si hace quack como un pato y anda como un pato, es un pato).
 
 - He agregado un atributo de tipo DamageStrategy a la clase enumerado. De esta forma, cada valor del enumerado tendrá
-  una
-  estrategia como atributo, la cual podrán aplicar usando el .calculateDamage que define la interfaz funcional; en cada
-  caso
-  se implementará como toque.
+  una estrategia como atributo, la cual podrán aplicar usando el .calculateDamage que define la interfaz funcional; en 
+  cada caso se implementará como toque.
 
 - He creado una clase final por cada estrategia; con constructor privado (las estrategias son estáticas, no debería
-  necesitar
-  una instancia para ejecutarlas) que definen, cada una, un método estático que cumple la interfaz funcional previamente
-  definida;
-  el compilador lo acepta.
+  necesitar una instancia para ejecutarlas) que definen, cada una, un método estático que cumple la interfaz funcional 
+  previamente definida; el compilador lo acepta.
 
 - He referenciado esos métodos estáticos mediante la sintaxis de referenciado de métodos estáticos `Class::staticMethod`
   directamente al constructor de cada valor del enumerado AttackType. De esta manera, cada tipo de ataque tiene
-  implícito su
-  estrategia de cálculo accesible desde su atributo DamageStrategy.
+  implícito su estrategia de cálculo accesible desde su atributo DamageStrategy.
 
 ### Posibles puntos de mejora
 
 - Al tener un enumerado, se debe seguir modificando el mismo para agregar un nuevo tipo de ataque. Sin embargo, al ser
-  el tipo
-  de ataque un atributo del propio ataque, es algo que tendría que ocurrir de todas formas. De todas formas, para
-  agregar una estrategia
-  a ese nuevo tipo de ataque basta con crear la clase nueva que la defina, por lo que de considerarse violación del OCP,
-  es muy asumible.
+  el tipo de ataque un atributo del propio ataque, es algo que tendría que ocurrir de todas formas. De todas formas, 
+  para agregar una estrategia a ese nuevo tipo de ataque basta con crear la clase nueva que la defina, por lo que de 
+  considerarse violación del OCP, es muy asumible.
 
 Si se encuentran más "pegas" a esta solución, me encantaría escucharlo, debatirlo y aprender de ello :)
 
@@ -169,8 +156,7 @@ Si se encuentran más "pegas" a esta solución, me encantaría escucharlo, debat
 
 He tenido que profundizar mucho para llegar a esta solución: anteriormente no había usado (ni conocía) la anotación de
 interfaces funcionales pese a conocer el concepto, ni había utilizado la referencia a métodos estáticos `::` más allá de
-su
-uso inconsciente en streams.
+su uso inconsciente en streams.
 
 Si existe alguna forma de refinar la solución o utilizar algún otro concepto de Java, sería de gran ayuda.
 
@@ -183,10 +169,8 @@ Que es fácil equivocarse con el orden de los parámetros al instanciar. Además
 **¿Cómo harías para que `new Character(...)` sea legible cuando hay valores por defecto?**
 
 - Seguramente, crearía un constructor canónico (parámetros para todos los atributos) y crearía constructores con
-  parámetros concretos
-  para los atributos a los que quiera darles valor. En estos constructores, se delegaría al canónico con los valores por
-  defecto,
-  evitando así valores nulos.
+  parámetros concretos para los atributos a los que quiera darles valor. En estos constructores, se delegaría al 
+  canónico con los valores por defecto, evitando así valores nulos.
 
 - A lo mejor podría hacerse algo con los setter, pero no creo que sea la mejor opción.
 
@@ -194,25 +178,21 @@ Que es fácil equivocarse con el orden de los parámetros al instanciar. Además
 
 El patrón Builder, el cual Lombok implementa fenomenal con la anotación @Builder ;).
 
-## ¿Cómo lo implementaría (si me diese la vida para más)?
+### Cómo lo implementaría
 
 Seguramente, con @Builder XD. Es broma, plantearía una ClaseBuilder con un método para cada atributo de la clase. Al
-final,
-tendría un .build(), que me devolvería una instancia con los atributos inicializados a los valores que he ido definiendo
-método
-a método.
+final, tendría un .build(), que me devolvería una instancia con los atributos inicializados a los valores que he ido 
+definiendo método a método.
 
 Esto mejora ampliamente la legibilidad y flexibilidad en la construcción de objetos, al ser mucho más expresivo y no
-forzar
-a poner valores por defecto o nulos en ciertos parámetros de los constructores.
+forzar a poner valores por defecto o nulos en ciertos parámetros de los constructores.
 
 ## 4. Un único almacén de batallas
 
 **¿Qué pasaría si dos clases crean su propio BattleRepository sin el static?**
 
 Que tendrían instancias distintas del repositorio (sin el static, `battles` es atributo de instancia, no de clase), y,
-por
-tanto, no tendrían la misma información.
+por tanto, no tendrían la misma información.
 
 **¿Cómo asegurar que toda la aplicación use la misma instancia de almacenamiento?**
 
@@ -223,28 +203,22 @@ acceso global a la misma.
 
 El patrón Singleton
 
-## Razonamiento de la solución
+### Razonamiento de la solución
 
 Se me ocurren varias implementaciones del Singleton, aunque todas pasan por hacer el constructor privado, cada una con
 sus pros y sus contras:
 
 - Implementación temprana por atributo estático: Consiste en que `BattleRepository` sea un atributo estático (y por
-  tanto
-  pre-inicializado en la definición de la clase). Es más directo y no requiere instanciar, pero puede resultar
-  innecesario
-  si al final la clase no se usa. En nuestro contexto, esto no es una desventaja
+  tanto pre-inicializado en la definición de la clase). Es más directo y no requiere instanciar, pero puede resultar
+  innecesario si al final la clase no se usa. En nuestro contexto, esto no es una desventaja
 
 - Implementación perezosa con getInstance: Es la implementación "clasica"; `BattleRepository` tendría un atributo no
-  estático
-  llamado instance. Este atributo se inicializa con un método estático público llamado getInstance(), devolviendo la
-  única instancia
-  recién creada cuando se le llame. En el resto de llamadas, simplemente retorna la variable inicializada previamente en
-  la primera llamada.
+  estático llamado instance. Este atributo se inicializa con un método estático público llamado getInstance(), 
+  devolviendo la única instancia recién creada cuando se le llame. En el resto de llamadas, simplemente retorna la 
+  variable inicializada previamente en la primera llamada.
   Esta implementación requiere una instancia al no ser estática, pero retrasa la creación del objeto hasta su uso real.
-  Además,
-  también es algo más flexible al permitir elegir la implementación del Map por parámetro (lo cual - creo - no se
-  debería hacer en un
-  Singleton y por eso no figura como desventaja en la otra implementación)
+  Además, también es algo más flexible al permitir elegir la implementación del Map por parámetro (lo cual - creo - no 
+  se debería hacer en un Singleton y por eso no figura como desventaja en la otra implementación)
 
 Ahora visto en una tabla (cortesía de Gemini):
 
@@ -271,7 +245,7 @@ exponga la funcionalidad de la forma que espera nuestro dominio.
 
 El patrón Adapter
 
-## ¿Cómo lo implementaría (si me diese la vida para más)?
+### Cómo lo implementaría
 
 Ya he dado pistas antes. Crearía una clase que contenga el body con el formato del proveedor externo y lo parsee al 
 formato que utiliza nuestro dominio.
@@ -282,14 +256,78 @@ adaptar como atributo.
 
 ## 6. Notificar cuando ocurre daño
 
-**¿Qué pasa si añades 5 "suscriptores" más? ¿Cuántas líneas tocarías en applyDamage()?**
+**¿Qué pasa si añades 5 "suscriptores" más? ¿Cuántas líneas tocarías en `applyDamage()`?**
 
-
+Tendrías que notificar a todos manualmente en el flujo de `applyDamage()`, y eso no es nada deseable.
 
 **¿Cómo desacoplar "ejecutar ataque" de "notificar a quien le interese"?**
 
-
+Utilizando herencia por composición, de forma que `BattleService` tenga una instancia de notificador que almacene los 
+objetos que desean ser notificados para hacerles llegar la información del evento y puedan tratarla.
 
 **¿Qué patrón permite que varios objetos reaccionen a un evento sin que el emisor los conozca?**
 
+El patrón Observer (o Publisher-Subscriber)
 
+### Cómo lo implementaría
+
+Ya he aplicado este patrón alguna vez, aunque creo que no correctamente. Crearía una interfaz Publisher y otra 
+Subscriber. La clase que ejecuta el evento del cual se quiere notificar tendrá un componente por composición de la 
+interfaz Publisher que se encargue de notificar a todos los Susbcribers que tenga almacenados en una estructura de 
+datos cualquiera (normalmente una lista).
+
+Este patrón me interesa especialmente, por lo que cuando pueda me lanzaré a implementarlo y a revisar la solución para 
+comparar sensaciones.
+
+## 7. Deshacer el último ataque
+
+**¿Qué tendrías que cambiar para poder "deshacer"?**
+
+Seguramente toque encapsular toda la información de un ataque, así como el estado previo de los implicados, de forma 
+que se pueda revertir si quisiera.
+
+**¿Cómo encapsular una acción (ataque) para poder ejecutarla, guardarla y revertirla?**
+
+Em... ¿aplicando el patrón Command? :)
+
+**¿Qué patrón trata las acciones como objetos de primera clase?**
+
+El patrón Command.
+
+### Cómo lo implementaría
+
+Buena pregunta. Le tengo un amor-odio a este patrón. Sé que pasaría por una interfaz, pero no tengo clara la
+distribución de responsabilidades en este comando en concreto. Me pondré con ello cuando pueda.
+
+# 8. Simplificar la API del combate
+
+**¿Qué problema hay en exponer muchos detalles internos a quien solo quiere "hacer un ataque"?**
+
+Que las cosas se acoplan demasiado y no se están respetando principios del paradigma del OOP como la encapsulación y 
+abstracción.
+
+**¿Qué patrón ofrece una interfaz simple que oculta la complejidad del subsistema?**
+
+El patrón facade
+
+### Cómo lo implementaría
+
+Es bastante similar al Adapter. Crearía una clase que sirva como "puerta de entrada" y que contenga todo lo necesario 
+para ejecutar un ataque, exponiendo métodos sencillos y orquestando por detrás toda la complejidad. Me gustaría 
+implementarlo más adelante.
+
+## 9. Ataques compuestos (combo)
+
+**¿Cómo representar "un ataque que son varios ataques"?**
+
+El propio combo es un ataque que tiene un conjunto de ataques en sí mismo, y el cálculo del daño se realiza en función 
+del cálculo de todos los ataques que lo forman.
+
+**¿Qué patrón permite tratar un grupo de objetos igual que un objeto individual?**
+
+El patrón composite
+
+### Cómo lo implementaría
+
+No lo he implementado nunca y la verdad es que me gustaría mucho. Creo que Attack tendría una lista objetos Attack como 
+atributo, y el cálculo del daño del ataque debería agregar los cálculos individuales de todos los que lo forman.
