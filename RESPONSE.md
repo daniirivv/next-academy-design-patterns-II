@@ -255,3 +255,41 @@ Ahora visto en una tabla (cortesía de Gemini):
 | **Inicialización Temprana (Eager)**<br>`private static final Clase instance = new Clase();` | - **Thread-safe por defecto:** La JVM garantiza que la instancia se cree antes de que cualquier hilo acceda a ella.<br>- **Simplicidad:** Código muy limpio y directo.<br>- **Alto rendimiento:** No requiere bloqueos ni comprobaciones `if` cada vez que se pide la instancia. | - **Uso de recursos:** La instancia se crea al cargar la clase, aunque nunca se llegue a utilizar.<br>- **Rigidez:** No permite manejar excepciones del constructor de forma sencilla (fuera de bloques `static`).         |
 | **Inicialización Perezosa (Lazy)**<br>`if (instance == null) { instance = new Clase(); }`   | - **Eficiencia de recursos:** Solo ocupa memoria si realmente se solicita la instancia.<br>- **Flexibilidad:** Permite lógica adicional o manejo de errores (`try-catch`) durante la creación.                                                                                   | - **Riesgo en multihilo:** Sin sincronización, dos hilos podrían crear dos instancias distintas.<br>- **Complejidad/Rendimiento:** Hacerlo seguro (con `synchronized`) añade una penalización de velocidad en cada acceso. |
 
+## 5. Recibir datos de un API externo
+
+**¿Qué problema hay en poner la lógica de conversión en el controller?**
+
+Que acoplas el controlador a la lógica de conversión, que puede cambiar y da al controlador otro motivo para ser 
+modificado, violando el SRP.
+
+**¿Cómo aislar la conversión "formato externo → nuestro dominio" para no ensuciar el controller?**
+
+En una clase aparte que se encargue específicamente de eso; un envoltorio que contenga el objeto en formato externo y 
+exponga la funcionalidad de la forma que espera nuestro dominio.
+
+**¿Qué patrón permite que un objeto "adaptado" se use como si fuera uno de los nuestros?**
+
+El patrón Adapter
+
+## ¿Cómo lo implementaría (si me diese la vida para más)?
+
+Ya he dado pistas antes. Crearía una clase que contenga el body con el formato del proveedor externo y lo parsee al 
+formato que utiliza nuestro dominio.
+
+Quizás también se pueda encapsular esta lógica en una Utility Class (o servicio estático), puesto que al final es un 
+mero parseo, pero tendría que analizar bien las implicaciones de esta opción frente a una clase que contenga el body a 
+adaptar como atributo.
+
+## 6. Notificar cuando ocurre daño
+
+**¿Qué pasa si añades 5 "suscriptores" más? ¿Cuántas líneas tocarías en applyDamage()?**
+
+
+
+**¿Cómo desacoplar "ejecutar ataque" de "notificar a quien le interese"?**
+
+
+
+**¿Qué patrón permite que varios objetos reaccionen a un evento sin que el emisor los conozca?**
+
+
