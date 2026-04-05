@@ -1,4 +1,4 @@
-package com.taller.patrones.domain.attacks;
+package com.taller.patrones.domain.attacks.strategy;
 
 @FunctionalInterface
 public interface DamageStrategy {

@@ -1,8 +1,11 @@
-package com.taller.patrones.domain.attacks;
+package com.taller.patrones.domain.attacks.strategy;
 
-public final class NormalDamageStrategy{
+import com.taller.patrones.domain.attacks.AttackType;
 
-    private NormalDamageStrategy(){}
+public final class NormalDamageStrategy {
+
+    private NormalDamageStrategy() {
+    }
 
     public static int calculateDamage(int attackStat, int defenseStat, int basePower) {
         int rawDamage = AttackType.calculateRawDamage(attackStat, basePower);
